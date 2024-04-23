@@ -11,59 +11,59 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Movie struct {
-	ID       string    `json:"id"`
-	Isbn     string    `json:"isbn"`
-	Title    string    `json:"title"`
-	Director *Director `json:"director"`
+type Education struct {
+	ID      string   `json:"id"`
+	Degree  string   `json:"degree"`
+	GPA     string   `json:"gpa"`
+	Student *Student `json:"student"`
 }
 
-type Director struct {
+type Student struct {
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 }
 
-var movies []Movie
+var educations []Education
 
 func main() {
 	r := mux.NewRouter()
 
-	movies = append(movies, Movie{ID: "1", Isbn: "438227", Title: "Movie One", Director: &Director{Firstname: "Muhammad", Lastname: "Suleman"}})
-	movies = append(movies, Movie{ID: "2", Isbn: "45444", Title: "Movie Two", Director: &Director{Firstname: "Muhammad", Lastname: "Noman"}})
+	educations = append(educations, Education{ID: "1", Degree: "Bachelor", GPA: "3.1", Student: &Student{Firstname: "Muhammad", Lastname: "Suleman"}})
+	educations = append(educations, Education{ID: "2", Degree: "Master", GPA: "3.2", Student: &Student{Firstname: "Muhammad", Lastname: "Noman"}})
 
-	r.HandleFunc("/movies", getMovies).Methods("GET")
-	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
-	r.HandleFunc("/movies", createMovie).Methods("POST")
-	r.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
-	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
+	r.HandleFunc("/educations", getEducations).Methods("GET")
+	r.HandleFunc("/educations/{id}", getEducation).Methods("GET")
+	r.HandleFunc("/educations", createEducation).Methods("POST")
+	r.HandleFunc("/educations/{id}", updateEducation).Methods("PUT")
+	r.HandleFunc("/educations/{id}", deleteEducation).Methods("DELETE")
 
 	fmt.Printf("Starting server at port 8081\n")
 	log.Fatal(http.ListenAndServe(":8081", r))
 
 }
 
-func getMovies(w http.ResponseWriter, r *http.Request) {
+func getEducations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(movies)
+	json.NewEncoder(w).Encode(educations)
 }
 
-func deleteMovie(w http.ResponseWriter, r *http.Request) {
+func deleteEducation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for index, item := range movies {
+	for index, item := range educations {
 		if item.ID == params["id"] {
-			movies = append(movies[:index], movies[index+1:]...)
+			educations = append(educations[:index], educations[index+1:]...)
 			break
 		}
 	}
-	json.NewEncoder(w).Encode(movies)
+	json.NewEncoder(w).Encode(educations)
 }
 
-func getMovie(w http.ResponseWriter, r *http.Request) {
+func getEducation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	//we do not need index that why we use blank _
-	for _, item := range movies {
+	for _, item := range educations {
 		if item.ID == params["id"] {
 			json.NewEncoder(w).Encode(item)
 			return
@@ -71,26 +71,26 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createMovie(w http.ResponseWriter, r *http.Request) {
+func createEducation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var movie Movie
-	_ = json.NewDecoder(r.Body).Decode(&movie)
-	movie.ID = strconv.Itoa(rand.Intn(100000000))
-	movies = append(movies, movie)
-	json.NewEncoder(w).Encode(movie)
+	var education Education
+	_ = json.NewDecoder(r.Body).Decode(&education)
+	education.ID = strconv.Itoa(rand.Intn(100000000))
+	educations = append(educations, education)
+	json.NewEncoder(w).Encode(education)
 }
 
-func updateMovie(w http.ResponseWriter, r *http.Request) {
+func updateEducation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for index, item := range movies {
+	for index, item := range educations {
 		if item.ID == params["id"] {
-			movies = append(movies[:index], movies[index+1:]...)
-			var movie Movie
-			_ = json.NewDecoder(r.Body).Decode(&movie)
-			movie.ID = params["id"]
-			movies = append(movies, movie)
-			json.NewEncoder(w).Encode(movie)
+			educations = append(educations[:index], educations[index+1:]...)
+			var education Education
+			_ = json.NewDecoder(r.Body).Decode(&education)
+			education.ID = params["id"]
+			educations = append(educations, education)
+			json.NewEncoder(w).Encode(education)
 			return
 		}
 	}
